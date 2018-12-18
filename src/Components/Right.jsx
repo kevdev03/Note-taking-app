@@ -1,12 +1,6 @@
 import React, { Component } from 'react';
 
 class Right extends Component {
-  componentDidUpdate() {
-    if (this.props.hasNewNote && this.refs.noteTitle.disabled) {
-      this.enableTextArea();
-    }
-  }
-
   handleNoteTitleChange = () => {
     const noteTitle = this.refs.noteTitle.value;
     this.props.onTitleChange(noteTitle);
@@ -18,41 +12,57 @@ class Right extends Component {
     this.props.onContentChange(noteContent)
   }
 
-  enableTextArea = () => {
-    const noteTitle = this.refs.noteTitle;
-    const noteContent = this.refs.noteContent;
-
-    noteTitle.focus();
-    noteTitle.disabled = false;
-    noteContent.disabled = false;
-    noteContent.placeholder = "Type away!"
+  handleNoteDelete = () => {
+    this.props.onAction('delete', this);
   }
 
   render() {
     return (
       <section className="Right">
-        <input ref="noteTitle" onChange={this.handleNoteTitleChange.bind(this)} type="text" placeholder="Enter note title" disabled tabIndex="1" />
-        <TextControls />
-        <textarea onChange={this.handleNoteContentChange.bind(this)} ref="noteContent" cols="30" rows="10" placeholder="Click a note or add new" disabled tabIndex="2"></textarea>
+        <input
+         ref="noteTitle"
+         onChange={this.handleNoteTitleChange.bind(this)}
+         type="text"
+         placeholder="Enter note title" 
+         tabIndex="1" 
+         value={this.props.currentNote.id && this.props.currentNote.title}/>
+
+        <TextControls onDelete={this.handleNoteDelete.bind(this)} />
+        <textarea 
+        ref="noteContent" 
+        onChange={this.handleNoteContentChange.bind(this)} 
+        cols="30" 
+        rows="10" 
+        placeholder="Start typing" 
+        tabIndex="2"
+        value={this.props.currentNote.id && this.props.currentNote.content}></textarea>
       </section>
     );
   }
 }
 
 class TextControls extends Component {
+  actionFunction = () => {
+    console.log('clicked!');
+  }
+
+  deleteNote = () => {
+    this.props.onDelete(this);
+  }
+
   render() {
     return (
       <div className="TextControls">
         <ul >
-          <li><button>B</button></li>
-          <li><button>I</button></li>
-          <li><button>U</button></li>
+          <li><button onClick={this.actionFunction.bind(this)}>B</button></li>
+          <li><button onClick={this.actionFunction.bind(this)}>I</button></li>
+          <li><button onClick={this.actionFunction.bind(this)}>U</button></li>
         </ul>
         <ul>
-          <li><button>info</button></li>
-          <li><button>history</button></li>
-          <li><button>delete</button></li>
-          <li><button>&hellip;</button></li>
+          <li><button onClick={this.actionFunction.bind(this)}>info</button></li>
+          <li><button onClick={this.actionFunction.bind(this)}>history</button></li>
+          <li><button onClick={this.deleteNote.bind(this)}>delete</button></li>
+          <li><button onClick={this.actionFunction.bind(this)}>&hellip;</button></li>
         </ul>
       </div>
     );

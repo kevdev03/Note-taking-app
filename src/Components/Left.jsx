@@ -1,24 +1,20 @@
 import React, { Component } from 'react';
 
 class Left extends Component {
-  constructor() {
-    super();
-
-    this.state = { isAddNewNoteClicked: false };
+  handleNote = (uid) => {
+    this.props.onNoteChange(uid);
   }
 
   render() {
     return (
       <section className="Left">
         <Settings onNew={this.onNewNote.bind(this)} />
-        <NotesList newNote={this.state.isAddNewNoteClicked} />
+        <NotesList notes={this.props.notes} handleNote={this.handleNote.bind(this)} />
       </section>
     );
   }
 
   onNewNote = (isAddNewNoteClicked) => {
-    // console.log('onNewNote', isAddNewNoteClicked);
-    this.setState({ isAddNewNoteClicked });
     this.props.onNewNote(isAddNewNoteClicked);
   }
 }
@@ -39,28 +35,44 @@ class Settings extends Component {
 }
 
 class NotesList extends Component {
+  handleClick = (uid) => {
+    this.props.handleNote(uid);
+  }
+
   render() {
+    const notes = this.props.notes;
+    let notesList = [];
+
+    for (let uid in notes) {
+      if (notes.hasOwnProperty(uid)) {
+        const note = notes[uid];
+        notesList.push(
+          <Note key={uid}
+           uid={uid}
+           title={note.title}
+           content={note.content}
+           handleClick={this.handleClick.bind(this)} />);
+      }
+    }
+
     return (
       <ul className="NotesList">
-        {(this.props.newNote) && <NewNote />}
-        <Note />
+        {notesList.length > 0 && notesList}
       </ul>
     )
   }
 }
 
-class NewNote extends Component {
-  render() {
-    return(<li className="Note active"><h3 ref="newNoteTitle">New Note</h3></li>);
-  }
-}
-
 class Note extends Component {
+  onClick = () => {
+    this.props.handleClick(this.props.uid);
+  }
+  
   render() {
     return (
-      <li className="Note">
-        <h3>Leverage agile frameworks</h3>
-        <p>to provide a robust synopsis for high level overviews. Iterative approaches to corporate strategy foster collaborative...</p>
+      <li id={this.props.uid} className="Note" onClick={this.onClick.bind(this)} >
+        <h3>{this.props.title}</h3>
+        <p>{this.props.content}</p>
       </li>
     )
   }
